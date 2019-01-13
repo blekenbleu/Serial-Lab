@@ -25,7 +25,7 @@ namespace Seriallab
 {
     public partial class MainForm : Form
     {
-        public string data{ get; set; }
+        public string Data{ get; set; }
         int graph_scaler = 500;
         int send_repeat_counter = 0;
         bool send_data_flag = false;
@@ -36,10 +36,10 @@ namespace Seriallab
         public MainForm()
         {
             InitializeComponent();
-            configrations();
+            Configurations();
         }
 
-        public void configrations()
+        public void Configurations()
         {
            portConfig.Items.AddRange(SerialPort.GetPortNames());
             baudrateConfig.DataSource = new[] { "115200", "19200", "230400", "57600", "38400", "9600", "4800" };
@@ -55,10 +55,10 @@ namespace Seriallab
             flowcontrolConfig.SelectedIndex = 0;
             openFileDialog1.Filter = "Text|*.txt";
 
-            mySerial.DataReceived += rx_data_event;
-            tx_repeater_delay.Tick += new EventHandler(send_data);
-            backgroundWorker1.DoWork += new DoWorkEventHandler(update_rxtextarea_event);
-            tabControl1.Selected += new TabControlEventHandler(tabControl1_Selecting);
+            mySerial.DataReceived += Rx_data_event;
+            tx_repeater_delay.Tick += new EventHandler(Send_data);
+            backgroundWorker1.DoWork += new DoWorkEventHandler(Update_rxtextarea_event);
+            tabControl1.Selected += new TabControlEventHandler(TabControl1_Selecting);
 
             for (int i = 0; i < 5 && i < 5; i++)
                 graph.Series[i].Points.Add(0);
@@ -69,7 +69,7 @@ namespace Seriallab
         private readonly string port = "port", file = "file", open = "open";
 
         /*connect and disconnect*/
-        private void connect_Click(object sender, EventArgs e)
+        private void Connect_Click(object sender, EventArgs e)
         {
             /*Connect*/
             if (!mySerial.IsOpen)
@@ -82,7 +82,7 @@ namespace Seriallab
                     }
                     catch
                     {
-                        alert(cannot + open + mySerial.PortName + port + inUse);
+                        Alert(cannot + open + mySerial.PortName + port + inUse);
                         return;
                     }
 
@@ -94,7 +94,7 @@ namespace Seriallab
                         }
                         catch
                         {
-                            alert(cannot + open + datalogger_checkbox.Text + file + inUse);
+                            Alert(cannot + open + datalogger_checkbox.Text + file + inUse);
                             return;
                         }
                     }
@@ -128,7 +128,7 @@ namespace Seriallab
         /* RX -----*/
 
         /* read data from serial */
-        private void rx_data_event(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        private void Rx_data_event(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             if (mySerial.IsOpen)
             {
@@ -142,30 +142,29 @@ namespace Seriallab
                     if (datalogger_checkbox.Checked)
                     {
                         try
-                        { out_file.Write(data.Replace("\\n", Environment.NewLine)); }
-                        catch { alert(cannot + writeTo + datalogger_checkbox.Text + file + inUse + notExist); return; }
+                        { out_file.Write(Data.Replace("\\n", Environment.NewLine)); }
+                        catch { Alert(cannot + writeTo + datalogger_checkbox.Text + file + inUse + notExist); return; }
                     }
 
 
                     this.BeginInvoke((Action)(() =>
                     {
-                        data = System.Text.Encoding.Default.GetString(dataRecevied);
+                        Data = System.Text.Encoding.Default.GetString(dataRecevied);
 
                         if (!plotter_flag && !backgroundWorker1.IsBusy)
                         {
                             if (display_hex_radiobutton.Checked)
-                                data = BitConverter.ToString(dataRecevied);
+                                Data = BitConverter.ToString(dataRecevied);
 
                             backgroundWorker1.RunWorkerAsync();
                         }
 
                         else if (plotter_flag)
                         {
-                            double number;
-                            string[] variables = data.Split('\n')[0].Split(',');
+                            string[] variables = Data.Split('\n')[0].Split(',');
                             for (int i = 0; i < variables.Length && i < 5; i++)
                             {
-                                if (double.TryParse(variables[i], out number))
+                                if (double.TryParse(variables[i], out double number))
                                 {
                                     if (graph.Series[i].Points.Count > graph_scaler)
                                         graph.Series[i].Points.RemoveAt(0);
@@ -176,23 +175,23 @@ namespace Seriallab
                         }
                     }));
                 }
-                catch { alert(cannot + read + mySerial.PortName + port + inUse); }
+                catch { Alert(cannot + read + mySerial.PortName + port + inUse); }
             }
         }
 
         /* Append text to rx_textarea*/
-        private void update_rxtextarea_event(object sender, DoWorkEventArgs e)
+        private void Update_rxtextarea_event(object sender, DoWorkEventArgs e)
         {
             this.BeginInvoke((Action)(() =>
             {
                 if (rx_textarea.Lines.Count() > 5000)
                     rx_textarea.ResetText();
-                rx_textarea.AppendText("[RX]> " + data);
+                rx_textarea.AppendText("[RX]> " + Data);
             }));
         }
 
         /* Enable data logger and log file selection */
-        private void datalogger_checkbox_CheckedChanged(object sender, EventArgs e)
+        private void Datalogger_checkbox_CheckedChanged(object sender, EventArgs e)
         {
             if (datalogger_checkbox.Checked)
             {
@@ -222,7 +221,7 @@ namespace Seriallab
         }
 
         /* clear rx textarea */
-        private void clear_rx_textarea_Click(object sender, EventArgs e)
+        private void Clear_rx_textarea_Click(object sender, EventArgs e)
         {
             rx_textarea.Clear();
         }
@@ -230,7 +229,7 @@ namespace Seriallab
         /*TX------*/
 
         /* Write data to serial port */
-        private void sendData_Click(object sender, EventArgs e)
+        private void SendData_Click(object sender, EventArgs e)
         {
             if (!send_data_flag)
             {
@@ -250,11 +249,11 @@ namespace Seriallab
                     }
                     catch
                     {
-                        alert(cannot + open + tx_textarea.Text + file + inUse);
+                        Alert(cannot + open + tx_textarea.Text + file + inUse);
                         return;
                     }
 
-                    progressBar1.Maximum = file_size(tx_textarea.Text);
+                    progressBar1.Maximum = File_size(tx_textarea.Text);
                     progressBar1.Visible = true;
                 }
 
@@ -281,7 +280,7 @@ namespace Seriallab
             }
         }
 
-        private void send_data(object sender, EventArgs e)
+        private void Send_data(object sender, EventArgs e)
         {
 
             string tx_data = "";
@@ -325,7 +324,7 @@ namespace Seriallab
                     }
                     catch
                     {
-                        alert(cannot + writeTo + mySerial.PortName + port + inUse);
+                        Alert(cannot + writeTo + mySerial.PortName + port + inUse);
                     }
                 }
             }
@@ -347,7 +346,7 @@ namespace Seriallab
         }
 
         /* write data when keydown*/
-        private void tx_textarea_KeyPress(object sender, KeyPressEventArgs e)
+        private void Tx_textarea_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (key_capture_radiobutton.Checked && mySerial.IsOpen)
             {
@@ -357,19 +356,19 @@ namespace Seriallab
                     tx_terminal.AppendText("[TX]> " + e.KeyChar.ToString() + "\n");
                     tx_textarea.Clear();
                 }
-                catch {alert(cannot + writeTo + mySerial.PortName + port + inUse); }
+                catch {Alert(cannot + writeTo + mySerial.PortName + port + inUse); }
             }
         }
 
 
-        private void send_word_radiobutton_CheckedChanged(object sender, EventArgs e)
+        private void Send_word_radiobutton_CheckedChanged(object sender, EventArgs e)
         {
             tx_textarea.Clear();
             send_repeat.Enabled = send_word_radiobutton.Checked;
             send_delay.Enabled = send_word_radiobutton.Checked;
             this.ActiveControl = tx_textarea;
         }
-        private void key_capture_radiobutton_CheckedChanged(object sender, EventArgs e)
+        private void Key_capture_radiobutton_CheckedChanged(object sender, EventArgs e)
         {
             tx_textarea.Clear();
             send_repeat.Enabled = !key_capture_radiobutton.Checked;
@@ -377,7 +376,7 @@ namespace Seriallab
             sendData.Enabled = !key_capture_radiobutton.Checked;
             this.ActiveControl = tx_textarea;
         }
-        private void write_form_file_radiobutton_CheckedChanged(object sender, EventArgs e)
+        private void Write_form_file_radiobutton_CheckedChanged(object sender, EventArgs e)
         {
             tx_textarea.Clear();
             send_repeat.Enabled = !write_form_file_radiobutton.Checked;
@@ -402,13 +401,13 @@ namespace Seriallab
         }
 
         /* Plotter ------*/
-        private void graph_speed_ValueChanged(object sender, EventArgs e)
+        private void Graph_speed_ValueChanged(object sender, EventArgs e)
         {
             graph.ChartAreas[0].AxisY.Interval = (int)graph_speed.Value;
         }
 
         /* change graph scale*/
-        private void graph_scale_ValueChanged(object sender, EventArgs e)
+        private void Graph_scale_ValueChanged(object sender, EventArgs e)
         {
             graph_scaler = (int)graph_scale.Value;
             for (int i = 0; i < 5; i++)
@@ -418,7 +417,7 @@ namespace Seriallab
         private string invalmin = "Invalid Minimum value";
 
         /* set graph max value*/
-        private void set_graph_max_enable_CheckedChanged(object sender, EventArgs e)
+        private void Set_graph_max_enable_CheckedChanged(object sender, EventArgs e)
         {
             if (set_graph_max_enable.Checked)
                 try
@@ -426,21 +425,21 @@ namespace Seriallab
                     graph_max.Value = (int)graph.ChartAreas[0].AxisY.Maximum;
                     graph.ChartAreas[0].AxisY.Maximum = (int)graph_max.Value;
                 }
-                catch {alert(invalmin);}
+                catch {Alert(invalmin);}
             else
                 graph.ChartAreas[0].AxisY.Maximum = Double.NaN;
 
             graph_max.Enabled = set_graph_max_enable.Checked;
         }
-        private void graph_max_ValueChanged(object sender, EventArgs e)
+        private void Graph_max_ValueChanged(object sender, EventArgs e)
         {
             if (graph_max.Value > graph_min.Value)
                 graph.ChartAreas[0].AxisY.Maximum = (int)graph_max.Value;
             else
-                alert(invalmin);
+                Alert(invalmin);
         }
         /* set graph min value*/
-        private void set_graph_min_enable_CheckedChanged(object sender, EventArgs e)
+        private void Set_graph_min_enable_CheckedChanged(object sender, EventArgs e)
         {
             if (set_graph_min_enable.Checked)
                 try
@@ -448,27 +447,27 @@ namespace Seriallab
                     graph_min.Value = (int)graph.ChartAreas[0].AxisY.Minimum;
                     graph.ChartAreas[0].AxisY.Minimum = (int)graph_min.Value;
                 }
-                catch { alert(invalmin); }
+                catch { Alert(invalmin); }
             else
                 graph.ChartAreas[0].AxisY.Minimum = Double.NaN;
 
             graph_min.Enabled = set_graph_min_enable.Checked;
         }
-        private void graph_min_ValueChanged(object sender, EventArgs e)
+        private void Graph_min_ValueChanged(object sender, EventArgs e)
         {
             if (graph_min.Value < graph_max.Value)
                 graph.ChartAreas[0].AxisY.Minimum = (int)graph_min.Value;
             else
-                alert(invalmin);
+                Alert(invalmin);
         }
         /* save graph as image*/
-        private void saveAsImageToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveAsImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 graph.SaveImage(saveFileDialog1.FileName, ChartImageFormat.Png);
         }
         /*clear graph*/
-        private void clear_graph_Click(object sender, EventArgs e)
+        private void Clear_graph_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < 5; i++)
                 graph.Series[i].Points.Clear();
@@ -479,7 +478,7 @@ namespace Seriallab
         private bool Serial_port_config()
         {
             try {mySerial.PortName = portConfig.Text; }
-            catch { alert("There are no available ports"); return false;}
+            catch { Alert("There are no available ports"); return false;}
             mySerial.BaudRate = (Int32.Parse(baudrateConfig.Text));
             mySerial.StopBits = (StopBits)Enum.Parse(typeof(StopBits), (stopbitsConfig.SelectedIndex + 1).ToString(), true);
             mySerial.Parity = (Parity)Enum.Parse(typeof(Parity), parityConfig.SelectedIndex.ToString(), true);
@@ -508,7 +507,7 @@ namespace Seriallab
         }
 
         /* tabcontrol*/
-        void tabControl1_Selecting(object sender, TabControlEventArgs e)
+        void TabControl1_Selecting(object sender, TabControlEventArgs e)
         {
             if (tabControl1.SelectedIndex == 2)
                 plotter_flag = true;
@@ -516,20 +515,20 @@ namespace Seriallab
                 plotter_flag = false;
         }
         /* Search for available serial ports */
-        private void portConfig_Click(object sender, EventArgs e)
+        private void PortConfig_Click(object sender, EventArgs e)
         {
             portConfig.Items.Clear();
             portConfig.Items.AddRange(SerialPort.GetPortNames());
         }
         /*alert function*/
-        private void alert(string text)
+        private void Alert(string text)
         {
             alert_messege.Icon = Icon;
             alert_messege.Visible = true;
             alert_messege.ShowBalloonTip(5000, "Serial Lab", text, ToolTipIcon.Error);
         }
         /*about box*/
-        private void toolStripStatusLabel2_Click(object sender, EventArgs e)
+        private void ToolStripStatusLabel2_Click(object sender, EventArgs e)
         {
             AboutBox1 a = new AboutBox1();
             a.ShowDialog();
@@ -540,13 +539,13 @@ namespace Seriallab
             if (mySerial.IsOpen)
                 mySerial.Close();
         }
-        private void tx_textarea_Click(object sender, EventArgs e)
+        private void Tx_textarea_Click(object sender, EventArgs e)
         {
             if (write_form_file_radiobutton.Checked)
-                write_form_file_radiobutton_CheckedChanged(sender, e);
+                Write_form_file_radiobutton_CheckedChanged(sender, e);
         }
         /*get number of lines*/
-        private int file_size(string path)
+        private int File_size(string path)
         {
             var file = new StreamReader(path).ReadToEnd();
             string [] lines = file.Split(new char[] { '\n' });
@@ -554,7 +553,7 @@ namespace Seriallab
             return count;
         }
 
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        private void ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             tx_terminal.Clear();
         }

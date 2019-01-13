@@ -17,7 +17,16 @@
             {
                 components.Dispose();
             }
+            DisposeStreams();
             base.Dispose(disposing);
+        }
+
+        private void DisposeStreams()
+        {
+            if (null != this.out_file)
+                this.out_file.Dispose();
+            if (null != this.in_file)
+                this.in_file.Dispose();
         }
 
         #region Windows Form Designer generated code
@@ -142,7 +151,7 @@
             this.connect.TabIndex = 0;
             this.connect.Text = "Connect";
             this.connect.UseVisualStyleBackColor = true;
-            this.connect.Click += new System.EventHandler(this.connect_Click);
+            this.connect.Click += new System.EventHandler(this.Connect_Click);
             // 
             // portConfig
             // 
@@ -152,7 +161,7 @@
             this.portConfig.Name = "portConfig";
             this.portConfig.Size = new System.Drawing.Size(76, 21);
             this.portConfig.TabIndex = 1;
-            this.portConfig.Click += new System.EventHandler(this.portConfig_Click);
+            this.portConfig.Click += new System.EventHandler(this.PortConfig_Click);
             // 
             // baudrateConfig
             // 
@@ -309,7 +318,7 @@
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(40, 20);
             this.toolStripStatusLabel2.Text = "About";
-            this.toolStripStatusLabel2.Click += new System.EventHandler(this.toolStripStatusLabel2_Click);
+            this.toolStripStatusLabel2.Click += new System.EventHandler(this.ToolStripStatusLabel2_Click);
             // 
             // tabControl1
             // 
@@ -362,7 +371,7 @@
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
             this.clearToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
             this.clearToolStripMenuItem.Text = "Clear";
-            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clear_rx_textarea_Click);
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.Clear_rx_textarea_Click);
             // 
             // read_options_group
             // 
@@ -550,7 +559,7 @@
             this.write_form_file_radiobutton.TabIndex = 20;
             this.write_form_file_radiobutton.Text = "From file";
             this.write_form_file_radiobutton.UseVisualStyleBackColor = true;
-            this.write_form_file_radiobutton.CheckedChanged += new System.EventHandler(this.write_form_file_radiobutton_CheckedChanged);
+            this.write_form_file_radiobutton.CheckedChanged += new System.EventHandler(this.Write_form_file_radiobutton_CheckedChanged);
             // 
             // key_capture_radiobutton
             // 
@@ -561,7 +570,7 @@
             this.key_capture_radiobutton.TabIndex = 19;
             this.key_capture_radiobutton.Text = "Key capture";
             this.key_capture_radiobutton.UseVisualStyleBackColor = true;
-            this.key_capture_radiobutton.CheckedChanged += new System.EventHandler(this.key_capture_radiobutton_CheckedChanged);
+            this.key_capture_radiobutton.CheckedChanged += new System.EventHandler(this.Key_capture_radiobutton_CheckedChanged);
             // 
             // send_word_radiobutton
             // 
@@ -574,7 +583,7 @@
             this.send_word_radiobutton.TabStop = true;
             this.send_word_radiobutton.Text = "Send word";
             this.send_word_radiobutton.UseVisualStyleBackColor = true;
-            this.send_word_radiobutton.CheckedChanged += new System.EventHandler(this.send_word_radiobutton_CheckedChanged);
+            this.send_word_radiobutton.CheckedChanged += new System.EventHandler(this.Send_word_radiobutton_CheckedChanged);
             // 
             // progressBar1
             // 
@@ -603,7 +612,7 @@
             this.sendData.TabIndex = 13;
             this.sendData.Text = "Send";
             this.sendData.UseVisualStyleBackColor = true;
-            this.sendData.Click += new System.EventHandler(this.sendData_Click);
+            this.sendData.Click += new System.EventHandler(this.SendData_Click);
             // 
             // tx_textarea
             // 
@@ -613,8 +622,8 @@
             this.tx_textarea.Name = "tx_textarea";
             this.tx_textarea.Size = new System.Drawing.Size(386, 24);
             this.tx_textarea.TabIndex = 14;
-            this.tx_textarea.Click += new System.EventHandler(this.tx_textarea_Click);
-            this.tx_textarea.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tx_textarea_KeyPress);
+            this.tx_textarea.Click += new System.EventHandler(this.Tx_textarea_Click);
+            this.tx_textarea.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Tx_textarea_KeyPress);
             // 
             // tabPage2
             // 
@@ -670,7 +679,7 @@
             0,
             0,
             -2147483648});
-            this.graph_max.ValueChanged += new System.EventHandler(this.graph_max_ValueChanged);
+            this.graph_max.ValueChanged += new System.EventHandler(this.Graph_max_ValueChanged);
             // 
             // set_graph_min_enable
             // 
@@ -681,7 +690,7 @@
             this.set_graph_min_enable.TabIndex = 27;
             this.set_graph_min_enable.Text = "Set Min:";
             this.set_graph_min_enable.UseVisualStyleBackColor = true;
-            this.set_graph_min_enable.CheckedChanged += new System.EventHandler(this.set_graph_min_enable_CheckedChanged);
+            this.set_graph_min_enable.CheckedChanged += new System.EventHandler(this.Set_graph_min_enable_CheckedChanged);
             // 
             // graph_min
             // 
@@ -709,7 +718,7 @@
             0,
             0,
             -2147483648});
-            this.graph_min.ValueChanged += new System.EventHandler(this.graph_min_ValueChanged);
+            this.graph_min.ValueChanged += new System.EventHandler(this.Graph_min_ValueChanged);
             // 
             // set_graph_max_enable
             // 
@@ -720,7 +729,7 @@
             this.set_graph_max_enable.TabIndex = 25;
             this.set_graph_max_enable.Text = "Set Max:";
             this.set_graph_max_enable.UseVisualStyleBackColor = true;
-            this.set_graph_max_enable.CheckedChanged += new System.EventHandler(this.set_graph_max_enable_CheckedChanged);
+            this.set_graph_max_enable.CheckedChanged += new System.EventHandler(this.Set_graph_max_enable_CheckedChanged);
             // 
             // graph_scale
             // 
@@ -752,7 +761,7 @@
             0,
             0,
             0});
-            this.graph_scale.ValueChanged += new System.EventHandler(this.graph_scale_ValueChanged);
+            this.graph_scale.ValueChanged += new System.EventHandler(this.Graph_scale_ValueChanged);
             // 
             // label3
             // 
@@ -790,7 +799,7 @@
             0,
             0,
             0});
-            this.graph_speed.ValueChanged += new System.EventHandler(this.graph_speed_ValueChanged);
+            this.graph_speed.ValueChanged += new System.EventHandler(this.Graph_speed_ValueChanged);
             // 
             // label7
             // 
@@ -891,14 +900,14 @@
             this.saveAsImageToolStripMenuItem.Name = "saveAsImageToolStripMenuItem";
             this.saveAsImageToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.saveAsImageToolStripMenuItem.Text = "Save as image";
-            this.saveAsImageToolStripMenuItem.Click += new System.EventHandler(this.saveAsImageToolStripMenuItem_Click);
+            this.saveAsImageToolStripMenuItem.Click += new System.EventHandler(this.SaveAsImageToolStripMenuItem_Click);
             // 
             // clearToolStripMenuItem1
             // 
             this.clearToolStripMenuItem1.Name = "clearToolStripMenuItem1";
             this.clearToolStripMenuItem1.Size = new System.Drawing.Size(148, 22);
             this.clearToolStripMenuItem1.Text = "Clear";
-            this.clearToolStripMenuItem1.Click += new System.EventHandler(this.clear_graph_Click);
+            this.clearToolStripMenuItem1.Click += new System.EventHandler(this.Clear_graph_Click);
             // 
             // groupBox1
             // 
@@ -959,7 +968,7 @@
             this.datalogger_checkbox.Text = "Enable Data logger";
             this.datalogger_checkbox.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.datalogger_checkbox.UseVisualStyleBackColor = false;
-            this.datalogger_checkbox.CheckedChanged += new System.EventHandler(this.datalogger_checkbox_CheckedChanged);
+            this.datalogger_checkbox.CheckedChanged += new System.EventHandler(this.Datalogger_checkbox_CheckedChanged);
             // 
             // openFileDialog1
             // 
@@ -995,7 +1004,7 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(101, 22);
             this.toolStripMenuItem1.Text = "Clear";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.ToolStripMenuItem1_Click);
             // 
             // MainForm
             // 
