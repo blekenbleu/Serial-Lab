@@ -64,6 +64,9 @@ namespace Seriallab
                 graph.Series[i].Points.Add(0);
 
         }
+        private readonly string cannot = "Cannot ", inUse = ";  it may be in use by another program";
+        private readonly string notExist = " or not exist", read = "read ", writeTo = "write to";
+        private readonly string port = "port", file = "file", open = "open";
 
         /*connect and disconnect*/
         private void connect_Click(object sender, EventArgs e)
@@ -79,7 +82,7 @@ namespace Seriallab
                     }
                     catch
                     {
-                        alert("Can't open " + mySerial.PortName + " port, it might be used in another program");
+                        alert(cannot + open + mySerial.PortName + port + inUse);
                         return;
                     }
 
@@ -91,7 +94,7 @@ namespace Seriallab
                         }
                         catch
                         {
-                            alert("Can't open " + datalogger_checkbox.Text + " file, it might be used in another program");
+                            alert(cannot + open + datalogger_checkbox.Text + file + inUse);
                             return;
                         }
                     }
@@ -140,7 +143,7 @@ namespace Seriallab
                     {
                         try
                         { out_file.Write(data.Replace("\\n", Environment.NewLine)); }
-                        catch { alert("Can't write to " + datalogger_checkbox.Text + " file it might be not exist or it is opennd in another program"); return; }
+                        catch { alert(cannot + writeTo + datalogger_checkbox.Text + file + inUse + notExist); return; }
                     }
 
 
@@ -173,7 +176,7 @@ namespace Seriallab
                         }
                     }));
                 }
-                catch { alert("Can't read form  " + mySerial.PortName + " port it might be opennd in another program"); }
+                catch { alert(cannot + read + mySerial.PortName + port + inUse); }
             }
         }
 
@@ -247,7 +250,7 @@ namespace Seriallab
                     }
                     catch
                     {
-                        alert("Can't open " + tx_textarea.Text + " file, it might be not exist or it is used in another program");
+                        alert(cannot + open + tx_textarea.Text + file + inUse);
                         return;
                     }
 
@@ -322,7 +325,7 @@ namespace Seriallab
                     }
                     catch
                     {
-                        alert("Can't write to " + mySerial.PortName + " port it might be opennd in another program");
+                        alert(cannot + writeTo + mySerial.PortName + port + inUse);
                     }
                 }
             }
@@ -354,7 +357,7 @@ namespace Seriallab
                     tx_terminal.AppendText("[TX]> " + e.KeyChar.ToString() + "\n");
                     tx_textarea.Clear();
                 }
-                catch {alert("Can't write to "+mySerial.PortName+" port it might be opennd in another program"); }
+                catch {alert(cannot + writeTo + mySerial.PortName + port + inUse); }
             }
         }
 
@@ -403,6 +406,7 @@ namespace Seriallab
         {
             graph.ChartAreas[0].AxisY.Interval = (int)graph_speed.Value;
         }
+
         /* change graph scale*/
         private void graph_scale_ValueChanged(object sender, EventArgs e)
         {
@@ -410,6 +414,9 @@ namespace Seriallab
             for (int i = 0; i < 5; i++)
                 graph.Series[i].Points.Clear();
         }
+
+        private string invalmin = "Invalid Minimum value";
+
         /* set graph max value*/
         private void set_graph_max_enable_CheckedChanged(object sender, EventArgs e)
         {
@@ -419,7 +426,7 @@ namespace Seriallab
                     graph_max.Value = (int)graph.ChartAreas[0].AxisY.Maximum;
                     graph.ChartAreas[0].AxisY.Maximum = (int)graph_max.Value;
                 }
-                catch {alert("Invalid Minimum value");}
+                catch {alert(invalmin);}
             else
                 graph.ChartAreas[0].AxisY.Maximum = Double.NaN;
 
@@ -430,7 +437,7 @@ namespace Seriallab
             if (graph_max.Value > graph_min.Value)
                 graph.ChartAreas[0].AxisY.Maximum = (int)graph_max.Value;
             else
-                alert("Invalid Maximum value");
+                alert(invalmin);
         }
         /* set graph min value*/
         private void set_graph_min_enable_CheckedChanged(object sender, EventArgs e)
@@ -441,7 +448,7 @@ namespace Seriallab
                     graph_min.Value = (int)graph.ChartAreas[0].AxisY.Minimum;
                     graph.ChartAreas[0].AxisY.Minimum = (int)graph_min.Value;
                 }
-                catch { alert("Invalid Minimum value"); }
+                catch { alert(invalmin); }
             else
                 graph.ChartAreas[0].AxisY.Minimum = Double.NaN;
 
@@ -452,7 +459,7 @@ namespace Seriallab
             if (graph_min.Value < graph_max.Value)
                 graph.ChartAreas[0].AxisY.Minimum = (int)graph_min.Value;
             else
-                alert("Invalid Minimum value");
+                alert(invalmin);
         }
         /* save graph as image*/
         private void saveAsImageToolStripMenuItem_Click(object sender, EventArgs e)
