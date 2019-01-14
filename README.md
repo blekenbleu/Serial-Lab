@@ -2,7 +2,8 @@
 
 
  **Serial Lab** is a Windows application (Written in C#) that **reads**, **writes** and **plots** data from/to serial port.  
- 
+ * [*comments for blekenbleu fork*](https://blekenbleu.github.io/SerialLab)  
+
   
  <img src="/imgs/sc3.png" width="430">
  

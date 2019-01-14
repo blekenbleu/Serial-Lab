@@ -514,12 +514,12 @@ namespace Seriallab
 
             if (value)
             {
-                connect.Text = "Press to Disconnect";
+                connect.Text = "Click to Disconnect";
                 toolStripStatusLabel1.Text = "Connected port: " + mySerial.PortName + " @ " + mySerial.BaudRate + " bps";
             }
             else
             {
-                connect.Text = "Press to Connect";
+                connect.Text = "Click to Connect";
                 toolStripStatusLabel1.Text = "No Connection";
             }
         }
