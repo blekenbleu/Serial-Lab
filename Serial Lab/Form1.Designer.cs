@@ -149,7 +149,7 @@
             this.connect.Name = "connect";
             this.connect.Size = new System.Drawing.Size(176, 40);
             this.connect.TabIndex = 0;
-            this.connect.Text = "Connect";
+            this.connect.Text = "Press to Connect";
             this.connect.UseVisualStyleBackColor = true;
             this.connect.Click += new System.EventHandler(this.Connect_Click);
             // 

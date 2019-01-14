@@ -32,6 +32,11 @@ namespace Seriallab
         bool plotter_flag = false;
         System.IO.StreamWriter out_file;
         System.IO.StreamReader in_file;
+        private readonly string noCOM = "COM ports unavailable";
+        private readonly string cannot = "Cannot ", read = "read ", writeTo = "write to";
+        private readonly string port = "port", file = "file", open = "open";
+        private readonly string inUse = ";  it may be in use by another program";
+        private readonly string notExist = " or not exist";
 
         public MainForm()
         {
@@ -41,7 +46,14 @@ namespace Seriallab
 
         public void Configurations()
         {
-           portConfig.Items.AddRange(SerialPort.GetPortNames());
+            int port;
+
+            portConfig.Items.AddRange(SerialPort.GetPortNames());
+            if (0 > (port = portConfig.FindString("COM")))
+                Alert(noCOM);
+            else
+                portConfig.SelectedIndex = port;
+
             baudrateConfig.DataSource = new[] { "115200", "19200", "230400", "57600", "38400", "9600", "4800" };
             parityConfig.DataSource = new[] { "None", "Odd", "Even", "Mark", "Space" };
             databitsConfig.DataSource = new[] { "5", "6", "7", "8" };
@@ -64,9 +76,6 @@ namespace Seriallab
                 graph.Series[i].Points.Add(0);
 
         }
-        private readonly string cannot = "Cannot ", inUse = ";  it may be in use by another program";
-        private readonly string notExist = " or not exist", read = "read ", writeTo = "write to";
-        private readonly string port = "port", file = "file", open = "open";
 
         /*connect and disconnect*/
         private void Connect_Click(object sender, EventArgs e)
@@ -130,7 +139,7 @@ namespace Seriallab
         /* read data from serial */
         private void Rx_data_event(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
-            if (mySerial.IsOpen)
+            if (mySerial.IsOpen && ComOK())
             {
                 try
                 {
@@ -231,6 +240,9 @@ namespace Seriallab
         /* Write data to serial port */
         private void SendData_Click(object sender, EventArgs e)
         {
+            if (!ComOK())
+               return;
+
             if (!send_data_flag)
             {
                 tx_repeater_delay.Interval = (int)send_delay.Value;
@@ -477,6 +489,12 @@ namespace Seriallab
         /*serial port config*/
         private bool Serial_port_config()
         {
+            if (null == portConfig || null == portConfig.Text || 0 == portConfig.Text.Length)
+            {
+                Alert(noCOM);
+                return false;
+            }
+
             try {mySerial.PortName = portConfig.Text; }
             catch { Alert("There are no available ports"); return false;}
             mySerial.BaudRate = (Int32.Parse(baudrateConfig.Text));
@@ -496,12 +514,12 @@ namespace Seriallab
 
             if (value)
             {
-                connect.Text = "Disconnected";
+                connect.Text = "Press to Disconnect";
                 toolStripStatusLabel1.Text = "Connected port: " + mySerial.PortName + " @ " + mySerial.BaudRate + " bps";
             }
             else
             {
-                connect.Text = "Connected";
+                connect.Text = "Press to Connect";
                 toolStripStatusLabel1.Text = "No Connection";
             }
         }
@@ -514,19 +532,46 @@ namespace Seriallab
             else
                 plotter_flag = false;
         }
+
         /* Search for available serial ports */
         private void PortConfig_Click(object sender, EventArgs e)
         {
             portConfig.Items.Clear();
             portConfig.Items.AddRange(SerialPort.GetPortNames());
+            var port = portConfig.FindString("COM");
+            if (0 > port)
+                Alert(noCOM);
+            else
+                portConfig.SelectedIndex = port;
         }
+
+        /* Check for disappeared port
+         * too many USB drivers mainly just pull the COM port name
+         * for disconnected serial devices
+         */
+        private bool ComOK()
+        {
+            string[] ports = SerialPort.GetPortNames();
+            bool ok = ports.Contains(mySerial.PortName);
+
+            if (!ok)
+               Alert("Missing ", mySerial.PortName);
+
+            return ok;
+        }
+
         /*alert function*/
-        private void Alert(string text)
+        private void Alert(string text, string optionalwhat = "", string optionalwhy = "")
         {
             alert_messege.Icon = Icon;
             alert_messege.Visible = true;
-            alert_messege.ShowBalloonTip(5000, "Serial Lab", text, ToolTipIcon.Error);
+            alert_messege.ShowBalloonTip(5000, "Serial Lab", text + optionalwhat + optionalwhy, ToolTipIcon.Error);
+            if (optionalwhat == mySerial.PortName)
+                connect.Text = text + optionalwhat;
+            else if (noCOM == text)
+                connect.Text = noCOM;
         }
+
         /*about box*/
         private void ToolStripStatusLabel2_Click(object sender, EventArgs e)
         {
